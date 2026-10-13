@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZhanChat — Personal Chat Hub</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      overflow-y: auto;
+      background: radial-gradient(circle at 50% 20%, #152238 0%, #0b0f19 75%);
+    }
+    .landing-nav {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      border-bottom: 1px solid var(--border-color);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+    }
+    .hero-section {
+      max-width: 1000px;
+      margin: 80px auto;
+      text-align: center;
+      padding: 0 20px;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(37, 99, 235, 0.2);
+      color: #60a5fa;
+      border: 1px solid rgba(37, 99, 235, 0.4);
+      padding: 6px 16px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+    .hero-title {
+      font-size: 48px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #ffffff 30%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      font-size: 18px;
+      color: var(--text-muted);
+      max-width: 680px;
+      margin: 0 auto 36px;
+      line-height: 1.6;
+    }
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      max-width: 1100px;
+      margin: 60px auto 100px;
+      padding: 0 20px;
+    }
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      text-align: left;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+    }
+    .feature-icon {
+      font-size: 32px;
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+    .feature-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .feature-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 30px;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="landing-nav">
+    <a href="/" class="brand-logo">
+      <span style="color:var(--primary); font-size:24px;">💬</span>
+      <span>ZhanChat</span>
+    </a>
+    <div style="display:flex; gap:12px;">
+      <a href="/auth.html" class="btn-secondary">Masuk / Daftar</a>
+      <a href="/auth.html?role=owner" class="btn-primary">Owner Portal</a>
+    </div>
+  </nav>
+
+  <section class="hero-section">
+    <div class="hero-badge">Hub Komunikasi Pribadi Terpusat</div>
+    <h1 class="hero-title">Hubungi Saya Langsung di ZhanChat</h1>
+    <p class="hero-subtitle">
+      Platform chatting real-time profesional terinspirasi WhatsApp Web. Semua pesan dan panggilan terhubung langsung secara privat ke akun Owner tanpa perantara bot.
+    </p>
+    <div class="hero-cta">
+      <a href="/auth.html" class="btn-primary" style="padding:14px 28px; font-size:16px;">
+        Mulai Chat Sekarang ➔
+      </a>
+      <a href="/auth.html?role=owner" class="btn-secondary" style="padding:14px 24px; font-size:16px;">
+        Masuk sebagai Owner
+      </a>
+    </div>
+  </section>
+
+  <section class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3 class="feature-title">Pesan Real-Time & Cepat</h3>
+      <p class="feature-desc">Sinkronisasi pesan instan dengan indikator status terkirim dan dibaca (read receipts), status sedang mengetik, dan emoji lengkap.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3 class="feature-title">Privasi 100% Terisolasi</h3>
+      <p class="feature-desc">Setiap pengguna hanya dapat melihat percakapan miliknya sendiri dengan Owner. Data chat dan berkas pengguna lain terlindungi secara mutlak.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">📞</div>
+      <h3 class="feature-title">Voice & Video Call WebRTC</h3>
+      <p class="feature-desc">Panggilan suara dan video dua arah berlatensi rendah dengan tombol mute mikrofon, on/off kamera, dan pergantian kamera depan/belakang.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">📎</div>
+      <h3 class="feature-title">Kirim Berbagai Jenis Berkas</h3>
+      <p class="feature-desc">Mendukung gambar, video, musik audio, dokumen PDF, Word, Excel, PowerPoint, hingga arsip ZIP dengan drag-and-drop dan progress bar.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3 class="feature-title">Dashboard Owner Modern</h3>
+      <p class="feature-desc">Dilengkapi filter pesan belum dibaca, belum dibalas, prioritas pesan, catatan kontak privat, serta riwayat panggilan lengkap.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">✍️</div>
+      <h3 class="feature-title">Balasan Manual & Eksklusif</h3>
+      <p class="feature-desc">Tidak ada bot AI yang menyamar. Setiap balasan diketik dan dikirim langsung oleh Owner secara personal dan profesional.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2026 ZhanChat — Personal Chat Hub. Hak cipta dilindungi undang-undang.</p>
+  </footer>
+</body>
+</html>

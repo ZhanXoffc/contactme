@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZhanChat — Chat Pribadi dengan Owner</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Panel Sisi Kiri (Info Pengguna & Pencarian) -->
+    <aside class="chat-list-panel" style="width: 320px;">
+      <div class="panel-header">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="avatar" id="myUserAvatar">U</div>
+          <div>
+            <div style="font-weight:600; font-size:15px;" id="myUserName">Pengguna</div>
+            <div style="font-size:11px; color:var(--text-dim);">Akun Terverifikasi</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:4px;">
+          <button class="btn-icon" id="btnOpenProfile" title="Edit Profil">⚙️</button>
+          <button class="btn-icon" id="btnLogout" title="Keluar">🚪</button>
+        </div>
+      </div>
+
+      <div class="search-bar-wrap">
+        <div class="search-input-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchChatInput" placeholder="Cari pesan di chat...">
+        </div>
+      </div>
+
+      <!-- Info Pemilik Kontak -->
+      <div style="padding: 20px; border-bottom: 1px solid var(--border-color);">
+        <h4 style="font-size:12px; text-transform:uppercase; color:var(--text-dim); margin-bottom:12px; letter-spacing:0.5px;">Kontak Resmi</h4>
+        <div style="display:flex; align-items:center; gap:12px; background:var(--bg-card); padding:12px; border-radius:var(--radius-md); border:1px solid var(--border-color);">
+          <div class="avatar" id="ownerHeaderAvatar">O</div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-weight:600; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="ownerHeaderName">Owner</div>
+            <div style="font-size:12px; color:var(--accent-cyan); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="ownerHeaderBio">Personal Hub</div>
+          </div>
+          <span class="badge badge-normal">Official</span>
+        </div>
+      </div>
+
+      <div style="padding: 20px; font-size:13px; color:var(--text-muted); line-height:1.6;">
+        <p>🔒 <b>Privasi Terjamin</b>: Percakapan ini bersifat pribadi dan langsung terhubung ke Owner ZhanChat. Pengguna lain tidak dapat melihat isi chat atau berkas Anda.</p>
+      </div>
+    </aside>
+
+    <!-- Area Chat Utama -->
+    <main class="chat-main-area">
+      <!-- Chat Header -->
+      <header class="chat-header">
+        <div class="chat-header-user">
+          <div class="avatar" style="position:relative;">
+            <span id="ownerHeaderAvatar2">💬</span>
+            <div class="status-badge online" id="ownerStatusBadge"></div>
+          </div>
+          <div>
+            <div class="header-name" id="ownerHeaderName2">Owner ZhanChat</div>
+            <div class="header-status online" id="ownerOnlineStatus">Online</div>
+          </div>
+        </div>
+
+        <div class="chat-header-actions">
+          <button class="btn-icon" id="btnVoiceCall" title="Panggilan Suara WebRTC">📞</button>
+          <button class="btn-icon" id="btnVideoCall" title="Panggilan Video WebRTC">📹</button>
+        </div>
+      </header>
+
+      <!-- Message History Stream -->
+      <div class="messages-container" id="messagesContainer">
+        <!-- Pesan akan dimuat secara dinamis -->
+      </div>
+
+      <!-- Drag & Drop Overlay -->
+      <div class="dropzone-overlay" id="dropzoneOverlay">
+        <div style="font-size:40px;">📂</div>
+        <p>Lepaskan berkas di sini untuk mengirim ke Owner</p>
+      </div>
+
+      <!-- Upload Progress Bar -->
+      <div class="upload-progress-wrap" id="uploadProgressWrap">
+        <div class="upload-progress-bar" id="uploadProgressBar"></div>
+      </div>
+
+      <!-- Chat Input Area -->
+      <footer class="chat-input-area">
+        <!-- Active Reply Banner -->
+        <div class="active-reply-bar" id="activeReplyBar">
+          <div>
+            <span style="color:var(--accent-cyan); font-weight:600;">Membalas <span id="replyAuthor">...</span>: </span>
+            <span id="replyText" style="color:var(--text-muted);">...</span>
+          </div>
+          <button id="btnCancelReply" style="background:none; color:var(--text-dim); font-size:16px;">&times;</button>
+        </div>
+
+        <!-- Staging Bar for Attachments -->
+        <div class="upload-staging-bar" id="uploadStagingBar"></div>
+
+        <div class="input-row">
+          <button class="btn-icon" id="btnAttachFile" title="Lampirkan Dokumen / Gambar">📎</button>
+          <input type="file" id="fileInput" multiple style="display:none;" accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.rar,.7z">
+
+          <div class="input-field-wrap">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Ketik pesan..." autocomplete="off">
+          </div>
+
+          <button class="btn-primary" id="btnSendMessage" style="border-radius:var(--radius-full); width:44px; height:44px; padding:0;">
+            ➤
+          </button>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Modal Edit Profil Saya -->
+  <dialog id="profileDialog" closedby="any">
+    <form id="profileForm">
+      <h3 style="font-size:18px; margin-bottom:16px;">Pengaturan Profil Saya</h3>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label for="editNameInput" style="font-size:13px; color:var(--text-muted); display:block; margin-bottom:4px;">Nama Lengkap</label>
+        <input type="text" id="editNameInput" style="width:100%;" required>
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label for="editPhoneInput" style="font-size:13px; color:var(--text-muted); display:block; margin-bottom:4px;">Nomor Telepon / WhatsApp</label>
+        <input type="tel" id="editPhoneInput" style="width:100%;">
+      </div>
+      <div class="form-group" style="margin-bottom:20px;">
+        <label for="editBioInput" style="font-size:13px; color:var(--text-muted); display:block; margin-bottom:4px;">Catatan / Bio</label>
+        <input type="text" id="editBioInput" style="width:100%;">
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button type="button" class="btn-secondary" onclick="document.getElementById('profileDialog').close()">Batal</button>
+        <button type="submit" class="btn-primary">Simpan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Script Libraries -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/webrtc.js"></script>
+  <script src="/js/chat.js"></script>
+</body>
+</html>

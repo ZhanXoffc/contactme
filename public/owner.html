@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZhanChat — Dashboard Owner</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- 1. Leftmost Navigation Rail -->
+    <nav class="nav-rail">
+      <a href="/owner.html" class="rail-logo" title="ZhanChat Hub">💬</a>
+
+      <button class="rail-btn active" data-tab="all" title="Semua Percakapan">
+        <span>💬</span>
+        <span class="rail-badge" id="railUnreadBadge" style="display:none;">0</span>
+      </button>
+
+      <button class="rail-btn" data-tab="unread" title="Pesan Belum Dibaca">
+        <span>📬</span>
+      </button>
+
+      <button class="rail-btn" data-tab="unreplied" title="Belum Dibalas">
+        <span>⏳</span>
+      </button>
+
+      <button class="rail-btn" data-tab="in_progress" title="Sedang Ditangani">
+        <span>📌</span>
+      </button>
+
+      <button class="rail-btn" data-tab="favorite" title="Favorit">
+        <span>⭐</span>
+      </button>
+
+      <button class="rail-btn" data-tab="archived" title="Arsip">
+        <span>📁</span>
+      </button>
+
+      <div class="rail-spacer"></div>
+
+      <button class="rail-btn" data-tab="calls" title="Riwayat Panggilan">
+        <span>📞</span>
+      </button>
+
+      <button class="rail-btn" data-tab="settings" title="Pengaturan Sistem">
+        <span>⚙️</span>
+      </button>
+
+      <button class="rail-btn" id="btnOwnerLogout" title="Keluar">
+        <span>🚪</span>
+      </button>
+
+      <div class="avatar avatar-sm" id="ownerProfileAvatar" title="Profil Owner">O</div>
+    </nav>
+
+    <!-- 2. Conversation List Panel -->
+    <aside class="chat-list-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span>Percakapan</span>
+        </div>
+      </div>
+
+      <div class="search-bar-wrap">
+        <div class="search-input-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchUsersInput" placeholder="Cari nama, email, atau nomor...">
+        </div>
+      </div>
+
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all">Semua</button>
+        <button class="filter-tab" data-filter="unread">Belum Dibaca</button>
+        <button class="filter-tab" data-filter="unreplied">Belum Dibalas</button>
+        <button class="filter-tab" data-filter="in_progress">Diproses</button>
+        <button class="filter-tab" data-filter="favorite">Favorit</button>
+        <button class="filter-tab" data-filter="archived">Arsip</button>
+      </div>
+
+      <ul class="conversation-list" id="conversationList">
+        <!-- Dimuat dinamis oleh owner.js -->
+      </ul>
+    </aside>
+
+    <!-- 3. Main Chat View -->
+    <main class="chat-main-area">
+      <!-- State saat belum ada chat yang dipilih -->
+      <div class="empty-state" id="noChatSelected" style="height:100%;">
+        <div class="empty-state-icon">💬</div>
+        <h2 style="font-size:22px; font-weight:700;">ZhanChat Owner Hub</h2>
+        <p style="max-width:380px; font-size:14px;">Pilih percakapan dari daftar di sebelah kiri untuk mulai membaca pesan, mengirim balasan, atau melakukan panggilan suara/video.</p>
+      </div>
+
+      <!-- State percakapan aktif -->
+      <div id="activeChatContainer" style="display:none; flex-direction:column; height:100%;">
+        <!-- Header Chat Aktif -->
+        <header class="chat-header">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <button class="btn-icon" id="btnBackToList" style="display:none;" title="Kembali ke Daftar">←</button>
+            <div class="avatar" id="activeUserAvatar">U</div>
+            <div>
+              <div class="header-name" id="activeUserName">Nama Pengguna</div>
+              <div class="header-status online" id="activeUserStatus">Online</div>
+            </div>
+          </div>
+
+          <div class="chat-header-actions">
+            <button class="btn-icon" id="btnVoiceCall" title="Panggilan Suara">📞</button>
+            <button class="btn-icon" id="btnVideoCall" title="Panggilan Video">📹</button>
+            <button class="btn-secondary" id="btnToggleBlock" style="font-size:12px; padding:6px 12px;">Blokir Pengguna</button>
+          </div>
+        </header>
+
+        <!-- Message History -->
+        <div class="messages-container" id="messagesContainer">
+          <!-- Pesan chat dimuat di sini -->
+        </div>
+
+        <!-- Drag & Drop Overlay -->
+        <div class="dropzone-overlay" id="dropzoneOverlay">
+          <div style="font-size:40px;">📂</div>
+          <p>Lepaskan berkas untuk mengirimkan balasan</p>
+        </div>
+
+        <!-- Upload Progress -->
+        <div class="upload-progress-wrap" id="uploadProgressWrap">
+          <div class="upload-progress-bar" id="uploadProgressBar"></div>
+        </div>
+
+        <!-- Chat Input Footer -->
+        <footer class="chat-input-area">
+          <div class="active-reply-bar" id="activeReplyBar">
+            <div>
+              <span style="color:var(--accent-cyan); font-weight:600;">Membalas <span id="replyAuthor">...</span>: </span>
+              <span id="replyText" style="color:var(--text-muted);">...</span>
+            </div>
+            <button id="btnCancelReply" style="background:none; color:var(--text-dim); font-size:16px;">&times;</button>
+          </div>
+
+          <div class="upload-staging-bar" id="uploadStagingBar"></div>
+
+          <div class="input-row">
+            <button class="btn-icon" id="btnAttachFile" title="Lampirkan File">📎</button>
+            <input type="file" id="fileInput" multiple style="display:none;" accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.rar,.7z">
+
+            <div class="input-field-wrap">
+              <input type="text" class="chat-input" id="chatInput" placeholder="Ketik balasan untuk pengguna ini..." autocomplete="off">
+            </div>
+
+            <button class="btn-primary" id="btnSendMessage" style="border-radius:var(--radius-full); width:44px; height:44px; padding:0;">
+              ➤
+            </button>
+          </div>
+        </footer>
+      </div>
+    </main>
+
+    <!-- 4. Details & Notes Panel (Right Column) -->
+    <aside class="details-panel" id="rightDetailsPanel">
+      <div class="details-header">
+        <div class="avatar avatar-lg" id="detailsAvatar">👤</div>
+        <h3 id="detailsUserName" style="font-size:17px; margin-top:6px;">Pengguna</h3>
+        <p id="detailsUserBio" style="font-size:12px; color:var(--text-muted);">Bio pengguna</p>
+      </div>
+
+      <div style="border-top:1px solid var(--border-color); padding-top:16px;">
+        <h4 style="font-size:12px; text-transform:uppercase; color:var(--text-dim); margin-bottom:8px;">Informasi Kontak</h4>
+        <div style="font-size:13px; margin-bottom:6px;">
+          <span style="color:var(--text-dim);">Email:</span> <span id="detailsUserEmail">-</span>
+        </div>
+        <div style="font-size:13px; margin-bottom:6px;">
+          <span style="color:var(--text-dim);">No. HP:</span> <span id="detailsUserPhone">-</span>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--border-color); padding-top:16px;">
+        <h4 style="font-size:12px; text-transform:uppercase; color:var(--text-dim); margin-bottom:8px;">Status & Prioritas</h4>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div>
+            <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Status Percakapan</label>
+            <select id="convStatusSelect" style="width:100%;">
+              <option value="active">Aktif</option>
+              <option value="in_progress">Sedang Ditangani</option>
+              <option value="favorite">Favorit ⭐</option>
+              <option value="archived">Diarsipkan 📁</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Label Prioritas</label>
+            <select id="convPrioritySelect" style="width:100%;">
+              <option value="normal">Normal</option>
+              <option value="high">Tinggi (High)</option>
+              <option value="urgent">Mendesak (Urgent)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--border-color); padding-top:16px; flex:1; display:flex; flex-direction:column;">
+        <h4 style="font-size:12px; text-transform:uppercase; color:var(--text-dim); margin-bottom:8px;">Catatan Pribadi Owner</h4>
+        <textarea id="ownerNotesInput" style="flex:1; width:100%; min-height:80px; resize:none;" placeholder="Tulis catatan rahasia terkait pengguna ini..."></textarea>
+        <button class="btn-primary" id="btnSaveNotes" style="margin-top:10px; width:100%; font-size:13px;">Simpan Catatan & Pengaturan</button>
+      </div>
+
+      <div style="border-top:1px solid var(--border-color); padding-top:16px;">
+        <button class="btn-secondary" id="btnDeleteConversation" style="width:100%; font-size:12px; color:var(--danger); border-color:rgba(239, 68, 68, 0.3);">
+          Hapus Riwayat Percakapan
+        </button>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Modal Riwayat Panggilan -->
+  <dialog id="callHistoryDialog" closedby="any" style="max-width:550px;">
+    <h3 style="font-size:18px; margin-bottom:16px;">Riwayat Seluruh Panggilan</h3>
+    <div id="callHistoryList" style="max-height:400px; overflow-y:auto; margin-bottom:16px;"></div>
+    <div style="text-align:right;">
+      <button class="btn-secondary" onclick="document.getElementById('callHistoryDialog').close()">Tutup</button>
+    </div>
+  </dialog>
+
+  <!-- Modal Pengaturan Aplikasi -->
+  <dialog id="settingsDialog" closedby="any" style="max-width:480px;">
+    <form id="settingsForm">
+      <h3 style="font-size:18px; margin-bottom:16px;">Pengaturan Sistem ZhanChat</h3>
+      <div class="form-group" style="margin-bottom:14px;">
+        <label for="settingMaxFileSize" style="display:block; font-size:13px; color:var(--text-muted); margin-bottom:4px;">Batas Maksimal Upload Berkas (MB)</label>
+        <input type="number" id="settingMaxFileSize" min="1" max="500" value="50" style="width:100%;">
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+          <input type="checkbox" id="settingAllowReg" checked>
+          <span>Izinkan Pengunjung Baru Mendaftar Akun</span>
+        </label>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+          <input type="checkbox" id="settingAllowVoice" checked>
+          <span>Izinkan Panggilan Suara (Voice Call)</span>
+        </label>
+      </div>
+      <div style="margin-bottom:20px;">
+        <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+          <input type="checkbox" id="settingAllowVideo" checked>
+          <span>Izinkan Panggilan Video (Video Call)</span>
+        </label>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button type="button" class="btn-secondary" onclick="document.getElementById('settingsDialog').close()">Batal</button>
+        <button type="submit" class="btn-primary">Simpan Pengaturan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Scripts -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/webrtc.js"></script>
+  <script src="/js/owner.js"></script>
+</body>
+</html>

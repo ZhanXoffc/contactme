@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Masuk ke ZhanChat</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: radial-gradient(circle at 50% 30%, #152238 0%, #0b0f19 80%);
+      padding: 20px;
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow-lg);
+    }
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .auth-logo span {
+      font-size: 36px;
+    }
+    .auth-logo h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 6px;
+    }
+    .auth-logo p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .auth-tabs {
+      display: flex;
+      background: var(--bg-input);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      margin-bottom: 24px;
+    }
+    .auth-tab-btn {
+      flex: 1;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 8px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .auth-tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .form-group input, .form-group textarea {
+      width: 100%;
+    }
+    .error-alert {
+      display: none;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #f87171;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-card">
+    <div class="auth-logo">
+      <span>💬</span>
+      <h2>ZhanChat</h2>
+      <p id="authSubtitle">Personal Communication Hub</p>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab-btn active" id="tabLogin" onclick="switchTab('login')">Masuk</button>
+      <button class="auth-tab-btn" id="tabRegister" onclick="switchTab('register')">Daftar</button>
+      <button class="auth-tab-btn" id="tabOwner" onclick="switchTab('owner')">Owner Portal</button>
+    </div>
+
+    <div class="error-alert" id="authError"></div>
+
+    <!-- Form Login Pengguna & Owner -->
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" placeholder="nama@email.com" required autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Kata Sandi</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn-primary" style="width:100%; padding:12px; margin-top:8px;">
+        Masuk ke Chat ➔
+      </button>
+    </form>
+
+    <!-- Form Register Pengguna Baru -->
+    <form id="registerForm" style="display:none;" onsubmit="handleRegister(event)">
+      <div class="form-group">
+        <label for="regName">Nama Lengkap</label>
+        <input type="text" id="regName" placeholder="Nama Anda" required autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label for="regEmail">Email</label>
+        <input type="email" id="regEmail" placeholder="nama@email.com" required autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="regPhone">Nomor WhatsApp / HP (Opsional)</label>
+        <input type="tel" id="regPhone" placeholder="+6281234567890">
+      </div>
+      <div class="form-group">
+        <label for="regPassword">Kata Sandi (Minimal 6 karakter)</label>
+        <input type="password" id="regPassword" placeholder="••••••••" required minlength="6" autocomplete="new-password">
+      </div>
+      <div class="form-group">
+        <label for="regBio">Catatan atau Info Kontak Singkat</label>
+        <input type="text" id="regBio" placeholder="Contoh: Klien Proyek Web">
+      </div>
+      <button type="submit" class="btn-primary" style="width:100%; padding:12px; margin-top:8px;">
+        Daftar & Hubungi Owner ➔
+      </button>
+    </form>
+
+    <div style="text-align:center; margin-top:20px; font-size:13px; color:var(--text-dim);">
+      <a href="/" style="color:var(--text-muted); text-decoration:none;">Kembali ke Beranda</a>
+    </div>
+  </div>
+
+  <script src="/js/utils.js"></script>
+  <script>
+    let currentMode = 'login'; // login, register, owner
+
+    // Deteksi parameter URL (?role=owner)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('role') === 'owner') {
+      switchTab('owner');
+    }
+
+    function switchTab(mode) {
+      currentMode = mode;
+      document.querySelectorAll('.auth-tab-btn').forEach(btn => btn.classList.remove('active'));
+      hideError();
+
+      const loginForm = document.getElementById('loginForm');
+      const registerForm = document.getElementById('registerForm');
+      const subtitle = document.getElementById('authSubtitle');
+
+      if (mode === 'login') {
+        document.getElementById('tabLogin').classList.add('active');
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+        subtitle.textContent = 'Masuk sebagai Pengguna / Pengunjung';
+      } else if (mode === 'register') {
+        document.getElementById('tabRegister').classList.add('active');
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+        subtitle.textContent = 'Daftar akun baru untuk menghubungi Owner';
+      } else if (mode === 'owner') {
+        document.getElementById('tabOwner').classList.add('active');
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+        subtitle.textContent = 'Portal Khusus Owner (Admin Utama)';
+      }
+    }
+
+    function showError(msg) {
+      const err = document.getElementById('authError');
+      err.textContent = msg;
+      err.style.display = 'block';
+    }
+
+    function hideError() {
+      const err = document.getElementById('authError');
+      err.style.display = 'none';
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      hideError();
+
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+          showError(data.message || 'Login gagal.');
+          return;
+        }
+
+        if (data.user.role === 'owner') {
+          window.location.href = '/owner.html';
+        } else {
+          window.location.href = '/chat.html';
+        }
+      } catch (err) {
+        showError('Gagal menghubungi server. Periksa koneksi Anda.');
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      hideError();
+
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const phone = document.getElementById('regPhone').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const bio = document.getElementById('regBio').value.trim();
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, phone, password, bio })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+          showError(data.message || 'Registrasi gagal.');
+          return;
+        }
+
+        window.location.href = '/chat.html';
+      } catch (err) {
+        showError('Gagal menghubungi server saat registrasi.');
+      }
+    }
+  </script>
+</body>
+</html>
